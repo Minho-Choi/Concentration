@@ -18,19 +18,47 @@ class ViewController: UIViewController {
         }
     }
     
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "Scores: \(score)"
+        }
+    }
+    
+    var emojiSet = [["🐶","🐱","🐭","🐸","🦊","🐻","🐷","🐵","🐔","🐧"],//Zoo
+        ["🐝","🐛","🦋","🐞","🐜","🕷","🦂","🦟","🦗","🐌"],//Bug
+        ["🕶","🌂","👑","💼","🎩","👠","🧦","🧤","🧣","💍"],//Things
+        ["🍆","🥕","🥦","🌽","🥒","🌶","🧅","🥑","🥬","🧄"],//Veges
+        ["🍔","🍣","🍕","🍖","🌮","🍜","🥘","🍟","🧇","🍳"],//Foods
+        ["⚽️","🏀","🏈","⚾️","🥎","🎾","🏐","🏉","🎱","🏓"]]//Sports
+    
+    func randomEmojiFactory(of themeSet: [[String]]) -> [String] {
+        let index = Int(arc4random_uniform(UInt32(themeSet.count)))
+        return themeSet[index]
+    }
+    
     @IBOutlet weak var flipCountLabel: UILabel!
-                               
+    
+    @IBOutlet weak var scoreLabel: UILabel!
+    
     @IBOutlet var cardButtons: [UIButton]!                              // Array<UIButton>! 과 같은 뜻
     
     @IBAction func touchCard(_ sender: UIButton) {                      // _underbar 있는 이유는 objective C의 잔재
         flipCount += 1
         if let cardNumber = cardButtons.firstIndex(of: sender) {
-            game.chooseCard(at: cardNumber)
+            score += game.chooseCard(at: cardNumber)
             updateViewFromModel()
         } else {
             print("Not in cardButtons")
         }
         
+    }
+    
+    @IBAction func restartGame(_ sender: UIButton) {
+        flipCount = 0
+        score = 0
+        game = Concentration(numberOfPairsOfCards: (cardButtons.count + 1) / 2)
+        emojiChoices = randomEmojiFactory(of: emojiSet)
+        updateViewFromModel()
     }
     
     func updateViewFromModel() {
@@ -47,7 +75,7 @@ class ViewController: UIViewController {
         }
     }
     
-    var emojiChoices = ["🐶","🐱","🐭","🐸","🦊","🐻","🐷","🐵","🐔"]
+    lazy var emojiChoices = randomEmojiFactory(of: emojiSet)
     
     var emoji = [Int:String]()
     

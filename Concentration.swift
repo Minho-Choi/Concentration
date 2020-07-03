@@ -14,13 +14,19 @@ class Concentration {
     
     var indexOfOneAndOnlyFaceUpCard: Int?
     
-    func chooseCard(at index: Int) {
+    func chooseCard(at index: Int) -> Int {
+        var scoreCalc = 0
+        cards[index].isShown += 1
+        if cards[index].isShown >= 2 {
+            scoreCalc += -1
+        }
         if !cards[index].isMatched {
             if let matchIndex = indexOfOneAndOnlyFaceUpCard, matchIndex != index {
                 //check if cards match
                 if cards[matchIndex].identifier == cards[index].identifier {
                     cards[matchIndex].isMatched = true
                     cards[index].isMatched = true
+                    scoreCalc += 2
                 }
                 cards[index].isFaceUp = true
                 indexOfOneAndOnlyFaceUpCard = nil
@@ -33,16 +39,21 @@ class Concentration {
                 indexOfOneAndOnlyFaceUpCard = index
             }
         }
+        return scoreCalc
     }
     
     init(numberOfPairsOfCards: Int) {
         for _ in 0..<numberOfPairsOfCards {
             let card = Card()
             cards += [card, card]
-//            cards.append(card)
-//            cards.append(card) 위와 같은 뜻, 구조체는 호출 시 참조x 복사되므로 가능
         }
         // TODO: Shuffle the cards
+        for index in 0..<numberOfPairsOfCards {
+            let randomIndex = Int(arc4random_uniform(UInt32(cards.count)))
+            let cache = cards[randomIndex]
+            cards[randomIndex] = cards[2*index + 1]
+            cards[2*index + 1] = cache
+        }
     }
     
 }
