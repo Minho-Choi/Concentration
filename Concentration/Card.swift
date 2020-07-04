@@ -8,16 +8,22 @@
 
 import Foundation
 
-struct Card {
+struct Card: Hashable {
+    
+    var hashValue: Int { return identifier }
+    
+    static func ==(lhs: Card, rhs: Card) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
     
     var isFaceUp = false
     var isMatched = false
     var isShown = 0
-    var identifier: Int
+    private var identifier: Int
     
-    static var identifierFactory = 0
+    private static var identifierFactory = 0
     
-    static func getUniqueIdentifier() -> Int {          // static 함수는 type에 대한 함수
+    private static func getUniqueIdentifier() -> Int {          // static 함수는 type에 대한 함수
         identifierFactory += 1
         return identifierFactory
     }
